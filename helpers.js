@@ -1,5 +1,6 @@
 
 var slugify = require("slugify");
+const Contact = require("./models/Contact");
 module.exports.slugify = function (str){
     return slugify(str, {
         replacement: '-',  // replace spaces with replacement character, defaults to `-`
@@ -31,6 +32,16 @@ module.exports.getDataForSql = function (datas, allowedDatas){
 
         } );
     });
+}
+
+
+
+module.exports.getSelectedColumnsForSql = function(request, allowedFields){
+    let selectedFields  = request.query.fields || null
+    if(selectedFields){
+        selectedFields = selectedFields.split(",").filter(colName => allowedFields.indexOf(colName)>-1 )
+    }
+    return (selectedFields || false)
 }
 
 
