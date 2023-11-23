@@ -31,7 +31,7 @@ let controllers = {
     menu:       require("./controllers/MenuController")
 }
 
-Router.get(     "/",                controllers.main.Index);
+// Router.get(     "/",                controllers.main.Index);
 Router.post(    "/login",           controllers.main.Login);
 Router.get(     "/logout",          controllers.main.Logout);
 
@@ -95,5 +95,9 @@ Router.delete(  "/menus/:id/clean",    controllers.menu.Clean);
 Router.post(    "/menus/items",        controllers.menu.AddItem);
 Router.put(     "/menus/items/:id",    controllers.menu.UpdateItem);
 Router.delete(  "/menus/items/:id",    controllers.menu.DeleteItem)
+
+Router.use("/", function(request, response){
+    response.status(400).json({status:false});
+});
 
 module.exports = Router;

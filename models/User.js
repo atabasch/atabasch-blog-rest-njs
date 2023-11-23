@@ -1,7 +1,6 @@
 let connection = require("../database/connection");
 let {Model, DataTypes, Op} = require("sequelize");
 let UserData = require("./UserData")
-// let Post    = require("./Post")
 let Comment = require("./Comment");
 let crypto = require("crypto");
 
@@ -87,7 +86,7 @@ User.init( {
             if(m.user_displayname.length < 1){
                 m.user_displayname = m.user_name;
             }
-            m.user_password = crypto.createHmac("sha256", process.env.SECRET_KEY_PASS).update(m.user_password).digest("hex");
+            m.user_password = crypto.createHmac("sha256", process.env.SECRET_KEY).update(m.user_password).digest("hex");
         },
 
         beforeUpdate: async function(m){
@@ -109,6 +108,27 @@ User.allowedFields = [
     "user_d_time",
     "user_l_time",
 ];
+
+User.Login = function(userData){
+    return new Promise(function(success, error){
+        User.findOne({
+            where: {
+                user_name:      userData.username,
+                user_password:  crypto.createHmac("sha256", process.env.SECRET_KEY).update(userData.password).digest("hex"),
+                user_status:    {
+                    [Op.notIn]: ["none", "banned"]
+                },
+                user_d_time: null
+            }
+        })
+            .then(result => {
+                return success(result);
+            })
+            .catch(err => {
+                return error(err);
+            });
+    });
+}
 
 
 User.hasOne(UserData, {  sourceKey:"user_id", foreignKey: "user_id", as: "user_data" })
